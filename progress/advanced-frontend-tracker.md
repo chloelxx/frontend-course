@@ -33,7 +33,7 @@
 
 | 模块 | 状态 | 理解深度 | 实践验证 |
 |------|------|----------|----------|
-| B.1 浏览器渲染管道 | 待开始 | - | - |
+| B.1 浏览器渲染管道 | 已完成 | A- | - |
 | B.2 JavaScript 性能深度 | 待开始 | - | - |
 | B.3 网络与加载性能 | 待开始 | - | - |
 
@@ -41,7 +41,7 @@
 
 | 模块 | 状态 | 理解深度 | 实践验证 |
 |------|------|----------|----------|
-| C.1 构建系统深度 | 待开始 | - | - |
+| C.1 构建系统深度 | 已完成 | A- | - |
 | C.2 架构设计模式 | 待开始 | - | - |
 | C.3 质量保障体系 | 待开始 | - | - |
 
@@ -75,6 +75,8 @@
 | 2026-03-05 | Vue 3 响应式边界情况 | 原理探究 | 解构丢失响应性、数组索引修改、Map/Set 响应式、私有属性边界、Date 对象响应式、冻结对象、watch 深浅监听、同步批处理机制 |
 | 2026-03-05 | Vue 3 编译时优化 | 原理探究 | Vue 2 编译机制、Patch Flags 原理、静态提升、树结构拍平、Vue 2 vs Vue 3 diff 对比、事件缓存 |
 | 2026-03-06 | JavaScript 核心知识点检查 | 知识点验证 | 执行上下文与作用域、原型与继承、异步编程、类型系统、内存管理（Event Loop、Promise、闭包、this 绑定、GC 算法） |
+| 2026-03-06 | 浏览器渲染管道 | 原理探究 | 渲染流程、DOM/CSSOM 构建、Render Tree、Layout vs Paint、强制同步布局、will-change、首屏优化 |
+| 2026-03-06 | Webpack 构建系统 | 原理探究 | 核心概念、代码分割、构建性能优化、Tree Shaking、持久化缓存、多进程构建 |
 
 ## 产出物清单
 
@@ -106,6 +108,8 @@
 - [x] 2026-03-04 Vue 3 响应式系统问答 (`sessions/2026-03-04-vue3-reactive-system.md`)
 - [x] 2026-03-05 Vue 3 响应式边界情况问答 (`sessions/2026-03-05-vue3-reactive-boundaries.md`)
 - [x] 2026-03-05 Vue 3 编译时优化问答 (`sessions/2026-03-05-vue3-compiler-optimization.md`)
+- [x] 2026-03-06 JavaScript 核心知识点检查 (`sessions/2026-03-06-javascript-core-check.md`)
+- [x] 2026-03-06 浏览器渲染管道与 Webpack 构建系统 (`sessions/2026-03-06-browser-rendering-and-webpack.md`)
 - [x] 2026-03-06 JavaScript 核心知识点检查 (`sessions/2026-03-06-javascript-core-check.md`)
 - [x] 2026-03-04 Vue 3 响应式系统问答 (`sessions/2026-03-04-vue3-reactive-system.md`)
 
