@@ -1,0 +1,40 @@
+{
+  "name": "error-monitor",
+  "version": "1.0.0",
+  "description": "前端异常监控 SDK 及后端服务",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsup src/index.ts --format esm,cjs --watch",
+    "build:server": "echo 'Server uses Node.js directly'",
+    "start:server": "node server/index.js",
+    "dev:server": "nodemon server/index.js",
+    "test": "vitest",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [
+    "error-monitoring",
+    "frontend",
+    "monitoring"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "eslint": "^8.0.0",
+    "nodemon": "^3.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.0",
+    "mysql2": "^3.9.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  }
+}

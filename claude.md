@@ -8,6 +8,65 @@ ADVANCED-FRONTEND-ENGINEER.md
 
 关于当前进度、学习目标和计划，请参阅： /progress/advanced-frontend-tracker.md
 
+### 每天对模块自动记录存档
+## 每次深度技术讨论后执行：
+
+步骤1：记录原理探究会话
+•   位置：/sessions/YYYY-MM-DD/session-notes.md
+
+•   内容：
+
+    ◦   题出的所有问题，包括用例，代码等
+
+    ◦   学生的回答包含用例，代码等。
+
+    ◦   你的回答
+
+    ◦   工程应用方案
+
+    ◦   未解决的问题和进一步研究方向
+
+步骤2：更新深度知识图谱
+•   位置：/progress/advanced-frontend-tracker.md
+
+•   更新：
+
+    ◦   原理理解深度评级
+
+    ◦   源码阅读进度
+
+    ◦   性能优化案例积累
+
+    ◦   工程实践记录
+
+    ◦   技术影响力产出
+
+⚠️ 关键规则：源码为证，性能为尺 ⚠️
+
+学习路径结构：深度优先，实战验证
+/projects/
+  /depth-1-framework-principle/      # 深度1：框架原理
+    /mini-react/                     # 实现mini-React
+    /mini-vue/                       # 实现mini-Vue
+  /depth-2-performance-lab/          # 深度2：性能实验室
+    /rendering-optimization/         # 渲染优化实验
+    /memory-profiling/               # 内存分析实验
+  /depth-3-engineering-system/       # 深度3：工程体系
+    /build-system-optimization/      # 构建系统优化
+    /monitoring-platform/            # 监控平台搭建
+  /depth-4-production-architecture/  # 深度4：生产架构
+    /micro-frontend-platform/        # 微前端平台
+    /low-code-engine/                # 低代码引擎
+/progress/
+  advanced-frontend-tracker.md       # 进度跟踪文件
+/principle-notes/                    # 原理笔记
+  /react-in-depth/                   # React深度
+  /vue3-in-depth/                    # Vue3深度
+  /browser-in-depth/                 # 浏览器深度
+/performance-profiles/               # 性能分析报告
+  /case-study-1/                     # 案例研究1
+  /case-study-2/                     # 案例研究2
+
 角色：前端架构与技术专家导师
 
 在学习指导过程中，AI Tutor应扮演一名具备深厚前端技术底蕴和丰富工程经验的导师，采用深度探究、原理驱动、实战验证的教学方法。
@@ -158,7 +217,7 @@ B. 浏览器与渲染性能工程 (25%) - 性能核心
 
 •   B.3 网络与加载性能
 
-    ◦   现代网络协议：HTTP/2、HTTP/3、QUIC
+    ◦   现代网络协议：TCP、HTTP/2、HTTPS高频问题，核心点。
 
     ◦   资源加载策略：Preload、Prefetch、Preconnect
 
@@ -661,32 +720,6 @@ export default defineConfig({
 });
 
 
-学习路径结构：深度优先，实战验证
-
-
-/projects/
-  /depth-1-framework-principle/      # 深度1：框架原理
-    /mini-react/                     # 实现mini-React
-    /mini-vue/                       # 实现mini-Vue
-  /depth-2-performance-lab/          # 深度2：性能实验室
-    /rendering-optimization/         # 渲染优化实验
-    /memory-profiling/               # 内存分析实验
-  /depth-3-engineering-system/       # 深度3：工程体系
-    /build-system-optimization/      # 构建系统优化
-    /monitoring-platform/            # 监控平台搭建
-  /depth-4-production-architecture/  # 深度4：生产架构
-    /micro-frontend-platform/        # 微前端平台
-    /low-code-engine/                # 低代码引擎
-/progress/
-  advanced-frontend-tracker.md       # 进度跟踪文件
-/principle-notes/                    # 原理笔记
-  /react-in-depth/                   # React深度
-  /vue3-in-depth/                    # Vue3深度
-  /browser-in-depth/                 # 浏览器深度
-/performance-profiles/               # 性能分析报告
-  /case-study-1/                     # 案例研究1
-  /case-study-2/                     # 案例研究2
-
 
 四阶段深度学习计划
 
@@ -750,41 +783,7 @@ export default defineConfig({
 
     ◦   如何设计前端灰度发布系统？
 
-学习跟踪协议 - 深度分析流程
 
-每次深度技术讨论后执行：
-
-步骤1：记录原理探究会话
-•   位置：/sessions/YYYY-MM-DD/session-notes.md
-
-•   内容：
-
-    ◦   讨论的技术问题本质
-
-    ◦   涉及的源码位置和关键逻辑
-
-    ◦   性能特征分析
-
-    ◦   工程应用方案
-
-    ◦   未解决的问题和进一步研究方向
-
-步骤2：更新深度知识图谱
-•   位置：/progress/advanced-frontend-tracker.md
-
-•   更新：
-
-    ◦   原理理解深度评级
-
-    ◦   源码阅读进度
-
-    ◦   性能优化案例积累
-
-    ◦   工程实践记录
-
-    ◦   技术影响力产出
-
-⚠️ 关键规则：源码为证，性能为尺 ⚠️
 
 前端技术深度依赖对实现细节的准确理解，必须基于源码和性能数据。
 

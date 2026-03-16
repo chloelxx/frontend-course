@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS 性能对比实验</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 20px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .experiment-section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .experiment-section h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #444;
+    }
+
+    .experiment-section .desc {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .box-container {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .box {
+      width: 100px;
+      height: 100px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: white;
+      transition: all 0.3s;
+    }
+
+    /* 差性能示例 - 使用 top/left */
+    .box-bad {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    /* 好性能示例 - 使用 transform */
+    .box-good {
+      background: linear-gradient(135deg, #51cf66, #40c057);
+      position: relative;
+    }
+
+    /* 动画 */
+    @keyframes move-bad {
+      0%, 100% { top: 0; left: 0; }
+      50% { top: 100px; left: 200px; }
+    }
+
+    @keyframes move-good {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(200px, 100px); }
+    }
+
+    .animating-bad {
+      animation: move-bad 2s ease-in-out infinite;
+    }
+
+    .animating-good {
+      animation: move-good 2s ease-in-out infinite;
+    }
+
+    .controls {
+      margin-top: 16px;
+      display: flex;
+      gap: 12px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    button.secondary {
+      background: #6c757d;
+    }
+
+    button.secondary:hover {
+      background: #545b62;
+    }
+
+    .metrics {
+      margin-top: 16px;
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 13px;
+    }
+
+    .metrics .metric {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .metrics .metric:last-child {
+      border-bottom: none;
+    }
+
+    .metrics .label {
+      color: #495057;
+    }
+
+    .metrics .value {
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .metrics .value.good {
+      color: #28a745;
+    }
+
+    .metrics .value.bad {
+      color: #dc3545;
+    }
+
+    /* FPS 显示 */
+    #fps-display {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 10px 16px;
+      background: rgba(0,0,0,0.8);
+      color: #0f0;
+      font-family: monospace;
+      font-size: 16px;
+      border-radius: 8px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div id="fps-display">FPS: --</div>
+
+  <div class="container">
+    <h1>🎨 CSS 性能对比实验</h1>
+
+    <!-- 实验 1: top/left vs transform -->
+    <div class="experiment-section">
+      <h2>实验 1: 动画性能对比 (top/left vs transform)</h2>
+      <p class="desc">
+        <strong>原理：</strong>top/left 会触发 Layout（回流），而 transform 只触发 Composite（合成）
+      </p>
+      <div class="box-container">
+        <div>
+          <div class="box box-bad" id="bad-box">差性能<br>top/left</div>
+          <div style="margin-top: 130px; text-align: center; color: #dc3545;">
+            触发 Layout<br>性能差
+          </div>
+        </div>
+        <div>
+          <div class="box box-good" id="good-box">好性能<br>transform</div>
+          <div style="margin-top: 130px; text-align: center; color: #28a745;">
+            只触发 Composite<br>性能好
+          </div>
+        </div>
+      </div>
+      <div class="controls">
+        <button onclick="toggleAnimation('bad')">差性能动画</button>
+        <button onclick="toggleAnimation('good')">好性能动画</button>
+        <button class="secondary" onclick="stopAll()">停止全部</button>
+      </div>
+      <div class="metrics">
+        <div class="metric">
+          <span class="label">差性能方案触发阶段：</span>
+          <span class="value bad">Layout → Paint → Composite</span>
+        </div>
+        <div class="metric">
+          <span class="label">好性能方案触发阶段：</span>
+          <span class="value good">Composite only</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 实验 2: 批量 DOM 操作 -->
+    <div class="experiment-section">
+      <h2>实验 2: 批量 DOM 操作性能</h2>
+      <p class="desc">
+        <strong>原理：</strong>每次读取 offsetWidth 后立即写入 style 会触发强制同步布局（Forced Synchronous Layout）
+      </p>
+      <div class="controls">
+        <button onclick="runBadBatch()">差性能批量操作</button>
+        <button onclick="runGoodBatch()">好性能批量操作</button>
+      </div>
+      <div id="batch-result" class="metrics" style="display: none;">
+        <!-- 结果将动态插入 -->
+      </div>
+    </div>
+
+    <!-- 实验 3: will-change 优化 -->
+    <div class="experiment-section">
+      <h2>实验 3: will-change 预优化</h2>
+      <p class="desc">
+        <strong>原理：</strong>will-change 提前告知浏览器哪些属性会变化，让浏览器提前创建合成层
+      </p>
+      <div class="box-container">
+        <div class="box" id="willchange-box" style="background: linear-gradient(135deg, #6610f2, #6f42c1);">
+          无优化
+        </div>
+        <div class="box" id="optimized-box" style="background: linear-gradient(135deg, #fd7e14, #e8590c); will-change: transform; opacity: 0.99;">
+          will-change
+        </div>
+      </div>
+      <div class="controls">
+        <button onclick="toggleOptimizedAnimation()">开始动画</button>
+        <button class="secondary" onclick="stopOptimized()">停止</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // FPS 监控
+    let lastTime = performance.now();
+    let frames = 0;
+    let fps = 0;
+
+    function updateFPS() {
+      frames++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        fps = frames;
+        frames = 0;
+        lastTime = now;
+        document.getElementById('fps-display').textContent = `FPS: ${fps}`;
+      }
+      requestAnimationFrame(updateFPS);
+    }
+    updateFPS();
+
+    // 动画控制
+    function toggleAnimation(type) {
+      const box = document.getElementById(`${type}-box`);
+      if (box.classList.contains('animating-bad') || box.classList.contains('animating-good')) {
+        box.classList.remove('animating-bad', 'animating-good');
+      } else {
+        box.classList.add(type === 'bad' ? 'animating-bad' : 'animating-good');
+      }
+    }
+
+    function stopAll() {
+      document.getElementById('bad-box').classList.remove('animating-bad', 'animating-good');
+      document.getElementById('good-box').classList.remove('animating-bad', 'animating-good');
+    }
+
+    // 批量操作性能对比
+    function runBadBatch() {
+      const container = document.createElement('div');
+      container.style.cssText = 'position: fixed; top: -9999px;';
+      document.body.appendChild(container);
+
+      const startTime = performance.now();
+
+      // 差性能：交替读写
+      for (let i = 0; i < 100; i++) {
+        const div = document.createElement('div');
+        div.style.width = '100px';
+        div.style.height = '100px';
+        div.style.background = 'red';
+        container.appendChild(div);
+
+        // 强制同步布局：读取后立即写入
+        const width = div.offsetWidth;
+        div.style.width = (width + 1) + 'px';
+      }
+
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+
+      document.body.removeChild(container);
+      showBatchResult(duration, 'bad');
+    }
+
+    function runGoodBatch() {
+      const container = document.createElement('div');
+      container.style.cssText = 'position: fixed; top: -9999px;';
+      document.body.appendChild(container);
+
+      const startTime = performance.now();
+
+      // 好性能：先读后写，批量操作
+      const elements = [];
+      for (let i = 0; i < 100; i++) {
+        const div = document.createElement('div');
+        div.style.width = '100px';
+        div.style.height = '100px';
+        div.style.background = 'green';
+        container.appendChild(div);
+        elements.push(div);
+      }
+
+      // 批量写入
+      elements.forEach(div => {
+        const width = div.offsetWidth;
+        div.style.width = (width + 1) + 'px';
+      });
+
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+
+      document.body.removeChild(container);
+      showBatchResult(duration, 'good');
+    }
+
+    function showBatchResult(duration, type) {
+      const resultDiv = document.getElementById('batch-result');
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = `
+        <div class="metric">
+          <span class="label">操作耗时：</span>
+          <span class="value ${type === 'good' ? 'good' : 'bad'}">${duration.toFixed(2)}ms</span>
+        </div>
+        <div class="metric">
+          <span class="label">性能评级：</span>
+          <span class="value ${type === 'good' ? 'good' : 'bad'}">${type === 'good' ? '优秀' : '差'}</span>
+        </div>
+        <div class="metric">
+          <span class="label">建议：</span>
+          <span class="value">批量读取，批量写入，避免交替读写</span>
+        </div>
+      `;
+    }
+
+    // will-change 动画
+    function toggleOptimizedAnimation() {
+      const box1 = document.getElementById('willchange-box');
+      const box2 = document.getElementById('optimized-box');
+
+      [box1, box2].forEach(box => {
+        box.style.transition = 'transform 0.5s';
+        box.style.transform = 'translateX(200px) scale(1.1) rotate(15deg)';
+      });
+    }
+
+    function stopOptimized() {
+      const box1 = document.getElementById('willchange-box');
+      const box2 = document.getElementById('optimized-box');
+
+      [box1, box2].forEach(box => {
+        box.style.transform = 'translateX(0) scale(1) rotate(0)';
+      });
+    }
+  </script>
+</body>
+</html>

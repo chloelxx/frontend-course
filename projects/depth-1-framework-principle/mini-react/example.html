@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini-React 使用示例</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 { color: #61dafb; }
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 20px 0;
+    }
+    button {
+      padding: 10px 20px;
+      background: #61dafb;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover { background: #4fa8c7; }
+    .count {
+      font-size: 48px;
+      font-weight: bold;
+      color: #333;
+    }
+    .log {
+      background: #1e1e1e;
+      color: #0f0;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: 'Consolas', monospace;
+      font-size: 13px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .log-item {
+      margin: 4px 0;
+      padding: 4px 8px;
+      border-left: 3px solid #61dafb;
+      padding-left: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚛️ Mini-React 示例</h1>
+    <div id="root"></div>
+    <div class="log" id="log"></div>
+  </div>
+
+  <script type="module">
+    // 引入 Mini-React（实际使用时需要构建）
+    // 这里为了演示，直接在页面中定义简化版本
+
+    // ========== 简化的 React 实现 ==========
+    let fiberRoot = null;
+    let workInProgress = null;
+    let hooks = [];
+    let hookIndex = 0;
+    let isMount = true;
+
+    function createElement(type, props, ...children) {
+      return { type, props: { ...props, children } };
+    }
+
+    function createFiber(type, props) {
+      return {
+        type,
+        props,
+        stateNode: null,
+        child: null,
+        sibling: null,
+        return: null,
+        alternate: null,
+        flags: 0,
+        memoizedState: null,
+      };
+    }
+
+    function useState(initialState) {
+      const index = hookIndex++;
+      if (isMount) {
+        hooks[index] = { state: initialState, queue: [] };
+      } else {
+        const hook = hooks[index];
+        hook.queue.forEach(fn => {
+          hook.state = typeof fn === 'function' ? fn(hook.state) : fn;
+        });
+        hook.queue = [];
+      }
+      const hook = hooks[index];
+      return [
+        hook.state,
+        (update) => {
+          hook.queue.push(update);
+          isMount = false;
+          render();
+        }
+      ];
+    }
+
+    function useEffect(effect, deps) {
+      const index = hookIndex++;
+      if (isMount) {
+        hooks[index] = { effect, deps };
+        setTimeout(effect, 0);
+      } else {
+        const hook = hooks[index];
+        const changed = !deps || deps.some((d, i) => d !== hook.deps[i]);
+        if (changed) {
+          hook.effect = effect;
+          hook.deps = deps;
+          setTimeout(effect, 0);
+        }
+      }
+    }
+
+    function render() {
+      const rootElement = fiberRoot;
+      if (!rootElement) return;
+
+      const container = document.getElementById('root');
+      const newElement = rootElement.type();
+
+      // 简化：直接重新渲染（实际应该走 Fiber 流程）
+      container.innerHTML = '';
+      renderElement(newElement, container);
+    }
+
+    function renderElement(element, container) {
+      if (!element) return;
+
+      if (typeof element.type === 'function') {
+        // 函数组件
+        const props = element.props;
+        const result = element.type(props);
+        renderElement(result, container);
+      } else {
+        // DOM 元素
+        const node = document.createElement(element.type);
+        for (const [key, value] of Object.entries(element.props || {})) {
+          if (key === 'children') {
+            if (Array.isArray(value)) {
+              value.forEach(child => renderElement(child, node));
+            } else {
+              renderElement(value, node);
+            }
+          } else if (key.startsWith('on')) {
+            node.addEventListener(key.slice(2).toLowerCase(), value);
+          } else {
+            node.setAttribute(key, value);
+          }
+        }
+        container.appendChild(node);
+      }
+    }
+
+    function createElementWrapper(type, props, ...children) {
+      return { type, props: { ...props, children } };
+    }
+
+    // ========== 示例组件 ==========
+
+    function Counter() {
+      const [count, setCount] = useState(0);
+
+      useEffect(() => {
+        log(`[Effect] count 变为 ${count}`);
+      }, [count]);
+
+      return createElement('div', { className: 'counter' },
+        createElement('button', {
+          onClick: () => setCount(c => c - 1)
+        }, '-'),
+        createElement('span', { className: 'count' }, count),
+        createElement('button', {
+          onClick: () => setCount(c => c + 1)
+        }, '+')
+      );
+    }
+
+    function App() {
+      useEffect(() => {
+        log('[Effect] App 挂载完成');
+      }, []);
+
+      return createElement('div', {},
+        createElement('h1', {}, '⚛️ Mini-React'),
+        createElement('p', {}, '这是一个简化版 React 实现，用于理解 Hooks 原理'),
+        createElement(Counter, {}),
+        createElement('div', { style: 'margin-top: 20px; color: #666;' },
+          createElement('p', {}, '💡 学习要点：'),
+          createElement('ul', {},
+            createElement('li', {}, '1. useState 通过链表存储状态'),
+            createElement('li', {}, '2. Hook 索引决定状态对应关系'),
+            createElement('li', {}, '3. 条件调用会破坏索引顺序'),
+            createElement('li', {}, '4. useEffect 依赖数组决定执行时机')
+          )
+        )
+      );
+    }
+
+    // ========== 日志工具 ==========
+
+    function log(message) {
+      const logEl = document.getElementById('log');
+      const item = document.createElement('div');
+      item.className = 'log-item';
+      item.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logEl.appendChild(item);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // ========== 启动应用 ==========
+
+    fiberRoot = App;
+    isMount = true;
+    render();
+  </script>
+</body>
+</html>
